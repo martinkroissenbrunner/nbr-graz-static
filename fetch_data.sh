@@ -1,15 +1,22 @@
-# bin/bash
+#!/bin/bash
 
-echo "fetching transkriptions from data_repo"
-rm -rf data/editions && mkdir data/editions
-rm -rf data/indices && mkdir data/indices
-rm -rf data/meta && mkdir data/meta
-curl -LO https://github.com/nuntiaturberichte/nbr-graz-data/archive/refs/heads/main.zip
-unzip main
+# Entferne alte Datenverzeichnisse
+echo "Cleaning up old data directories..."
+rm -rf data/editions data/meta data/mets data/register
 
-mv ./nbr-graz-data-main/data/editions/ ./data
-mv ./nbr-graz-data-main/data/indices/ ./data
-mv ./nbr-graz-data-main/data/meta/ ./data
+# Klone das Repository mit den neuesten Daten
+echo "Cloning the latest version of the data repository..."
+git clone https://github.com/nuntiaturberichte/nbr-graz-data.git temp-data-repo
 
-rm main.zip
-rm -rf ./nbr-graz-data-main
+# Verschiebe die benötigten Daten
+echo "Moving data to the correct locations..."
+mv temp-data-repo/editions data/
+mv temp-data-repo/meta data/
+mv temp-data-repo/mets data/
+mv temp-data-repo/register data/
+
+# Bereinige das temporäre Klonverzeichnis
+echo "Cleaning up..."
+rm -rf temp-data-repo
+
+echo "Data fetch complete."
