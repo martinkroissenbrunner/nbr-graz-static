@@ -22,33 +22,40 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ANT_OPTS: -Xmx6g
-      TYPESENSE_HOST: typesense.acdh-dev.oeaw.ac.at
-      TYPESENSE_PORT: 443
-      TYPESENSE_PROTOCOL: https
-      TYPESENSE_API_KEY: ${{secrets.TYPESENSE_API_KEY}}
+      # TYPESENSE_HOST: typesense.acdh-dev.oeaw.ac.at
+      # TYPESENSE_PORT: 443
+      # TYPESENSE_PROTOCOL: https
+      # TYPESENSE_API_KEY: ${{secrets.TYPESENSE_API_KEY}}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Saxon, Ant and Fundament
+      - name: Install Python and Dependencies
         run: |
-          apt-get update && apt-get install openjdk-11-jre-headless ant -y --no-install-recommend
-          ./shellscripts/script.sh
+          sudo apt-get update && sudo apt-get install python3 python3-pip openjdk-11-jre-headless ant -y
+          pip install -r requirements.txt
 
-      - name: install python things
-        run: pip install -r requirements.txt
+      - name: Run Custom Shell Script
+        run: ./shellscripts/script.sh
 
-      - name: Fetch the data
-        run: ./fetch_data.sh
+      - name: Fetch the Data
+        run: |
+          echo "Fetching data..."
+          ./fetch_data.sh
 
-      - name: Build the app
-        run: ant
+      - name: Build the App
+        run: |
+          echo "Building the app..."
+          ant || { echo 'Ant build failed'; exit 1; }
+
+      - name: Check HTML Directory
+        run: if [ ! -d "./html" ]; then echo "HTML directory not found!"; exit 1; fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './html'
@@ -57,5 +64,5 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: create htpasswd file
+      - name: Create htpasswd File
         run: htpasswd -b -c .htpasswd admin "${{ env.IMAGE_NAME }}"
