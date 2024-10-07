@@ -10,10 +10,10 @@ git clone https://github.com/nuntiaturberichte/nbr-graz-data.git temp-data-repo
 
 # Verschiebe die benötigten Daten
 echo "Moving data to the correct locations..."
-mv temp-data-repo/editions data/
-mv temp-data-repo/meta data/
-mv temp-data-repo/mets data/
-mv temp-data-repo/register data/
+mv temp-data-repo/editions data/editions
+mv temp-data-repo/meta data/meta
+mv temp-data-repo/mets data/mets
+mv temp-data-repo/register data/register
 
 # Bereinige das temporäre Klonverzeichnis
 echo "Cleaning up..."
